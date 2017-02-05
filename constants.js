@@ -24,8 +24,8 @@ exports.GetHostAndPort = function(host)
 
 function getSecureContext (domain) {
     return tls.createSecureContext({
-        key:  fs.readFileSync(__dirname + "/ssl_cert/" + domain + ".key", 'utf8'),
-        cert: fs.readFileSync(__dirname + "/ssl_cert/" + domain + ".crt", 'utf8')
+        key:  fs.readFileSync(__dirname + "/ssl_cert/" + domain + ".key"),
+        cert: fs.readFileSync(__dirname + "/ssl_cert/" + domain + ".crt")
       }).context;
 }
 
@@ -39,9 +39,18 @@ const secureContext = function(domains) {
     }(domains);
 
 exports.options = {
-    SNICallback: function (domain) {
-        return secureContext[domain];
-    }, //SNICallback is passed the domain name, see NodeJS docs on TLS
+    SNICallback: function (domain, cb) {
+        if (secureContext[domain]) {
+            if (cb) {
+                cb(null, secureContext[domain]);
+            } else {
+                // compatibility for older versions of node
+                return secureContext[domain]; 
+            }
+        } else {
+            throw new Error('No keys/certificates for domain requested');
+        }
+    }, 
     key: fs.readFileSync(__dirname + "/ssl_cert/"+domains[0].name+".key"),
     cert: fs.readFileSync(__dirname + "/ssl_cert/"+domains[0].name+".crt")
 }
