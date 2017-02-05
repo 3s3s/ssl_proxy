@@ -13,15 +13,17 @@ server.addListener("request", function(request, response) {
     
     console.log("Init session");
     
-    var ph = url.parse(request.url)
+    const objHostAndPort = constants.GetHostAndPort(request.headers.host);
+
+    var ph = url.parse(request.url);
     var options = {
-        port: constants.proxyPort,
-        hostname: constants.proxyHost,
+        port: objHostAndPort.port,
+        hostname: objHostAndPort.host,
         method: request.method,
         path: ph.path,
         headers: request.headers
-    }
-    options.headers.host = constants.proxyHost;
+    };
+    options.headers.host = objHostAndPort.host;
     
     var proxyRequest = require("https").request(options);
     
