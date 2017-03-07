@@ -57,3 +57,4 @@ exports.options = {
     cert: fs.readFileSync(__dirname + "/ssl_cert/"+domains[0].ssl+".crt")
 }
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
