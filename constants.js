@@ -4,11 +4,13 @@ const fs = require("fs");
 const tls = require("tls");
 
 exports.g_bDebug = true;
-exports.my_port = process.env.PORT; //4443;
+exports.my_port = process.env.PORT || 5443; //4443;
 
 const domains = [
-    {'name' : 'smailblock.info', 'port' : '10443'}, 
-    {'name' : 'smailcoin.info', 'port' : '11443'}
+    {'name' : 'cbd.cryptobank.uk', 'port' : '11443', 'ssl' : 'server'}, 
+    {'name' : 'cbe.cryptobank.uk', 'port' : '12443', 'ssl' : 'server'},
+    {'name' : 'cbr.cryptobank.uk', 'port' : '13443', 'ssl' : 'server'},
+    {'name' : 'cby.cryptobank.uk', 'port' : '14443', 'ssl' : 'server'},
 ];
 
 /////////////////////////////////////////////////////////////
@@ -51,7 +53,7 @@ exports.options = {
             throw new Error('No keys/certificates for domain requested');
         }
     }, 
-    key: fs.readFileSync(__dirname + "/ssl_cert/"+domains[0].name+".key"),
-    cert: fs.readFileSync(__dirname + "/ssl_cert/"+domains[0].name+".crt")
+    key: fs.readFileSync(__dirname + "/ssl_cert/"+domains[0].ssl+".key"),
+    cert: fs.readFileSync(__dirname + "/ssl_cert/"+domains[0].ssl+".crt")
 }
 
