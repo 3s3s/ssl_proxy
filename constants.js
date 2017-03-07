@@ -35,7 +35,7 @@ function getSecureContext (domain) {
 const secureContext = function(domains) {
         var ret = {};
         for (var i=0; i<domains.length; i++)
-            ret[domains[i].name] = getSecureContext(domains[i].name);
+            ret[domains[i].ssl] = getSecureContext(domains[i].ssl);
         
         return ret;
     }(domains);
