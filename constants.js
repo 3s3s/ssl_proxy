@@ -3,7 +3,7 @@
 const fs = require("fs");
 const tls = require("tls");
 
-exports.g_bDebug = true;
+exports.g_bDebug = process.env.PORT ? true : false;
 exports.my_port = process.env.PORT || 5443; //4443;
 
 const domains = [
