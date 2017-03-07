@@ -11,7 +11,7 @@ const domains = [
     {'name' : 'cbe.cryptobank.uk', 'port' : '12443', 'ssl' : 'server'},
     {'name' : 'cbr.cryptobank.uk', 'port' : '13443', 'ssl' : 'server'},
     {'name' : 'cby.cryptobank.uk', 'port' : '14443', 'ssl' : 'server'},
-    {'name' : 'cryptobank.uk', 'port' : '80443', 'ssl' : 'server'},
+    {'name' : 'cryptobank.uk', 'port' : '60443', 'ssl' : 'server'},
 ];
 
 /////////////////////////////////////////////////////////////
