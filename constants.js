@@ -24,10 +24,10 @@ exports.GetHostAndPort = function(host)
     return {'host' : domains[0].name, 'port' : domains[0].port};
 };
 
-function getSecureContext (domain) {
+function getSecureContext (filename) {
     return tls.createSecureContext({
-        key:  fs.readFileSync(__dirname + "/ssl_cert/" + domain + ".key"),
-        cert: fs.readFileSync(__dirname + "/ssl_cert/" + domain + ".crt")
+        key:  fs.readFileSync(__dirname + "/ssl_cert/" + filename + ".key"),
+        cert: fs.readFileSync(__dirname + "/ssl_cert/" + filename + ".crt")
       }).context;
 }
 
@@ -35,7 +35,7 @@ function getSecureContext (domain) {
 const secureContext = function(domains) {
         var ret = {};
         for (var i=0; i<domains.length; i++)
-            ret[domains[i].ssl] = getSecureContext(domains[i].ssl);
+            ret[domains[i].name] = getSecureContext(domains[i].ssl);
         
         return ret;
     }(domains);
