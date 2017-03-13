@@ -4,15 +4,32 @@ const constants = require("./constants");
 const url = require('url');
 var Cookies = require( "cookies" );
 
+const serverHTTP = require("http").createServer();
 const server = constants.g_bDebug ? require("http").createServer() : require("https").createServer(constants.options);
 
-server.listen(constants.my_port, function(){
-    console.log("SSL Proxy listening on port "+constants.my_port);
+if (!constants.g_bDebug)
+{
+    serverHTTP.listen(constants.my_port, function(){
+        console.log("HTTP Proxy listening on port "+constants.my_port);
+    });
+}
+
+serverHTTP.addListener("request", function(request, response) {
+    
+    console.log("Init HTTP session");
+    
+    response.writeHead(301, { "Location": "https://" + request.headers['host'] + request.url });
+    response.end();
+});
+
+
+server.listen(constants.my_portSSL, function(){
+    console.log("SSL Proxy listening on port "+constants.my_portSSL);
 });
 
 server.addListener("request", function(request, response) {
     
-    console.log("Init session");
+    console.log("Init SSL session");
     
     var cookies = new Cookies( request, response )
     

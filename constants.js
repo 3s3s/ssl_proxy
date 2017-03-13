@@ -5,18 +5,19 @@ const tls = require("tls");
 const url = require('url');
 
 exports.g_bDebug = process.env.PORT ? true : false;
-exports.my_port = process.env.PORT || 443; //4443;
+exports.my_portSSL = process.env.PORT || 443; //4443;
+exports.my_port = process.env.PORT || 80;
 
 const domains = [
     {'name' : 'cbd.cryptobank.uk', 'port' : '11443', 'ssl' : 'server', 'path' : '/cbd'}, 
     {'name' : 'cbe.cryptobank.uk', 'port' : '12443', 'ssl' : 'server', 'path' : '/cbe'},
     {'name' : 'cbr.cryptobank.uk', 'port' : '13443', 'ssl' : 'server', 'path' : '/cbr'},
     {'name' : 'cby.cryptobank.uk', 'port' : '14443', 'ssl' : 'server', 'path' : '/cby'},
-    {'name' : 'cryptobank.uk', 'port' : '60443', 'ssl' : 'server', 'path' : '/'},
+    {'name' : 'cryptobank.uk', 'port' : '60443', 'ssl' : 'server', 'path' : '/home'},
 ];
 
 /////////////////////////////////////////////////////////////
-exports.GetHostAndPort = function(host)
+/*exports.GetHostAndPort = function(host)
 {
     for (var i=0; i<domains.length; i++)
     {
@@ -24,20 +25,23 @@ exports.GetHostAndPort = function(host)
             return {'host' : host, 'port' : domains[i].port};
     }
     return {'host' : domains[4].name, 'port' : domains[4].port};
-};
+};*/
 
 exports.NeadRedirect = function(path, host)
 {
-    if (!host || path=="/")
+    if (!host)
         return {};
         
-    for (var i=0; i<4; i++)
+    if (path == '/')
+        return {location : '/home'};
+        
+    for (var i=0; i<domains.length; i++)
     {
         if (path.indexOf(domains[i].path) == 0)
             return {};
     }
 
-    for (var i=0; i<4; i++)
+    for (var i=0; i<domains.length; i++)
     {
         if (domains[i].name == host && (path.indexOf(domains[i].path) != 0))
             return {location : domains[i].path + path};
