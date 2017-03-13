@@ -7,11 +7,11 @@ exports.g_bDebug = process.env.PORT ? true : false;
 exports.my_port = process.env.PORT || 443; //4443;
 
 const domains = [
-    {'name' : 'cbd.cryptobank.uk', 'port' : '11443', 'ssl' : 'server'}, 
-    {'name' : 'cbe.cryptobank.uk', 'port' : '12443', 'ssl' : 'server'},
-    {'name' : 'cbr.cryptobank.uk', 'port' : '13443', 'ssl' : 'server'},
-    {'name' : 'cby.cryptobank.uk', 'port' : '14443', 'ssl' : 'server'},
-    {'name' : 'cryptobank.uk', 'port' : '60443', 'ssl' : 'server'},
+    {'name' : 'cbd.cryptobank.uk', 'port' : '11443', 'ssl' : 'server', 'path' : '/cbd'}, 
+    {'name' : 'cbe.cryptobank.uk', 'port' : '12443', 'ssl' : 'server', 'path' : '/cbe'},
+    {'name' : 'cbr.cryptobank.uk', 'port' : '13443', 'ssl' : 'server', 'path' : '/cbr'},
+    {'name' : 'cby.cryptobank.uk', 'port' : '14443', 'ssl' : 'server', 'path' : '/cby'},
+    {'name' : 'cryptobank.uk', 'port' : '60443', 'ssl' : 'server', 'path' : '/'},
 ];
 
 /////////////////////////////////////////////////////////////
@@ -22,8 +22,18 @@ exports.GetHostAndPort = function(host)
         if (domains[i].name == host)
             return {'host' : host, 'port' : domains[i].port};
     }
-    return {'host' : domains[0].name, 'port' : domains[0].port};
+    return {'host' : domains[4].name, 'port' : domains[4].port};
 };
+
+exports.GetHostAndPort2 = function(path)
+{
+    for (var i=0; i<domains.length; i++)
+    {
+        if (domains[i].path ==path)
+            return {'host' : domains[i].name, 'port' : domains[i].port, 'path' : path.indexOf('/', 1) == -1 ? '/' : path.substr(path.indexOf('/', 1))};
+    }
+    return {'host' : domains[0].name, 'port' : domains[0].port, 'path' : path};
+}
 
 function getSecureContext (filename) {
     return tls.createSecureContext({

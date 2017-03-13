@@ -13,14 +13,17 @@ server.addListener("request", function(request, response) {
     
     console.log("Init session");
     
-    const objHostAndPort = constants.GetHostAndPort(request.headers.host);
-
     var ph = url.parse(request.url);
+    
+    const objHostAndPort = constants.GetHostAndPort2(ph.path);
+    
+    const path = objHostAndPort.path;
+
     var options = {
         port: objHostAndPort.port,
         hostname: objHostAndPort.host,
         method: request.method,
-        path: ph.path,
+        path: path,
         headers: request.headers
     };
     options.headers.host = objHostAndPort.host;
