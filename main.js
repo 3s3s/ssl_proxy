@@ -2,6 +2,7 @@
 
 const constants = require("./constants");
 const url = require('url');
+var Cookies = require( "cookies" );
 
 const server = constants.g_bDebug ? require("http").createServer() : require("https").createServer(constants.options);
 
@@ -13,13 +14,26 @@ server.addListener("request", function(request, response) {
     
     console.log("Init session");
     
-    var ph = url.parse(request.url);
+    var cookies = new Cookies( request, response )
     
-    const objHostAndPort = constants.GetHostAndPort2(ph.path);
+    const ph = url.parse(request.url);
+    
+    const redirect = constants.NeadRedirect(ph.path, cookies.get( "host" ));
+    if (redirect && redirect.location)
+    {
+        response.writeHead(302, {
+          'Location': redirect.location
+        });
+        response.end();
+        return;
+    }
+
+    const objHostAndPort = constants.GetHostAndPort2(ph.path, cookies.get( "host" ));
+    cookies.set('host', objHostAndPort.host);
     
     const path = objHostAndPort.path;
 
-    var options = {
+    const options = {
         port: objHostAndPort.port,
         hostname: objHostAndPort.host,
         method: request.method,
@@ -27,6 +41,9 @@ server.addListener("request", function(request, response) {
         headers: request.headers
     };
     options.headers.host = objHostAndPort.host;
+    
+    const host = objHostAndPort.host;
+
     
     var proxyRequest = require("https").request(options);
     

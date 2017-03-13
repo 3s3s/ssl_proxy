@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const tls = require("tls");
+const url = require('url');
 
 exports.g_bDebug = process.env.PORT ? true : false;
 exports.my_port = process.env.PORT || 443; //4443;
@@ -25,14 +26,44 @@ exports.GetHostAndPort = function(host)
     return {'host' : domains[4].name, 'port' : domains[4].port};
 };
 
-exports.GetHostAndPort2 = function(path)
+exports.NeadRedirect = function(path, host)
+{
+    if (!host)
+        return {};
+        
+    for (var i=0; i<4; i++)
+    {
+        if (path.indexOf(domains[i].path) == 0)
+            return {};
+    }
+
+    for (var i=0; i<4; i++)
+    {
+        if (domains[i].name == host && (path.indexOf(domains[i].path) != 0))
+            return {location : domains[i].path + path};
+    }
+    return {};
+}
+
+exports.GetHostAndPort2 = function(path, host)
 {
     for (var i=0; i<domains.length; i++)
     {
-        if (domains[i].path ==path)
+        if (path.indexOf(domains[i].path) == 0)
             return {'host' : domains[i].name, 'port' : domains[i].port, 'path' : path.indexOf('/', 1) == -1 ? '/' : path.substr(path.indexOf('/', 1))};
     }
-    return {'host' : domains[0].name, 'port' : domains[0].port, 'path' : path};
+    
+    /*if (host)
+    {
+        for (var i=0; i<domains.length; i++)
+        {
+            if (domains[i].name == host)
+                return exports.GetHostAndPort2(domains[i].path + path);
+                //return {'host' : domains[i].name, 'port' : domains[i].port, 'path' : path};
+        }
+    }*/
+
+    return {'host' : domains[4].name, 'port' : domains[4].port, 'path' : path};
 }
 
 function getSecureContext (filename) {
