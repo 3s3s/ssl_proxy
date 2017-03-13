@@ -28,7 +28,7 @@ exports.GetHostAndPort = function(host)
 
 exports.NeadRedirect = function(path, host)
 {
-    if (!host)
+    if (!host || path=="/")
         return {};
         
     for (var i=0; i<4; i++)
