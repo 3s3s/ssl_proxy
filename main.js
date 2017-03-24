@@ -2,68 +2,69 @@
 
 const constants = require("./constants");
 const url = require('url');
-var Cookies = require( "cookies" );
+var querystring = require('querystring');
 
 const serverHTTP = require("http").createServer();
-const server = constants.g_bDebug ? require("http").createServer() : require("https").createServer(constants.options);
+const serverHTTPS = require("https").createServer(constants.options);
+//const server = constants.g_bDebug ? serverHTTP : serverHTTPS;//require("http").createServer() : require("https").createServer(constants.options);
 
-if (!constants.g_bDebug)
-{
-    serverHTTP.listen(constants.my_port, function(){
-        console.log("HTTP Proxy listening on port "+constants.my_port);
-    });
-}
+serverHTTP.listen(constants.my_portHTTP, function(){
+    console.log("HTTP Proxy listening on port "+constants.my_portHTTP);
+});
+
+serverHTTPS.listen(constants.my_portHTTPS, function(){
+    console.log("SSL Proxy listening on port "+constants.my_portHTTPS);
+});
+
 
 serverHTTP.addListener("request", function(request, response) {
     
     console.log("Init HTTP session");
     
-    response.writeHead(301, { "Location": "https://" + request.headers['host'] + request.url });
-    response.end();
+    const req = request;
+    const res = response;
+    
+    CommonProxy(req, res);
 });
 
 
-server.listen(constants.my_portSSL, function(){
-    console.log("SSL Proxy listening on port "+constants.my_portSSL);
-});
-
-server.addListener("request", function(request, response) {
+serverHTTPS.addListener("request", function(request, response) {
     
     console.log("Init SSL session");
     
-    var cookies = new Cookies( request, response )
+    const req = request;
+    const res = response;
     
-    const ph = url.parse(request.url);
-    
-    const redirect = constants.NeadRedirect(ph.path, cookies.get( "host" ));
-    if (redirect && redirect.location)
-    {
-        response.writeHead(302, {
-          'Location': redirect.location
-        });
-        response.end();
-        return;
-    }
+    CommonProxy(req, res);
+});
 
-    const objHostAndPort = constants.GetHostAndPort2(ph.path, cookies.get( "host" ));
-    cookies.set('host', objHostAndPort.host);
-    
-    const path = objHostAndPort.path;
+function CommonProxy(request, response)
+{
+    const objHostAndPort = constants.GetHostAndPort2(request.headers.host);
+
+    const ph = url.parse(request.url);
+    const path = objHostAndPort.path || ph.path;
 
     const options = {
         port: objHostAndPort.port,
-        hostname: objHostAndPort.host,
+        hostname: objHostAndPort.name,
         method: request.method,
-        path: path,
+        path: path || '/',
         headers: request.headers
     };
-    options.headers.host = objHostAndPort.host;
+    options.headers.host = objHostAndPort.name;
     
-    const host = objHostAndPort.host;
+    var proxyRequest = objHostAndPort.ssl == 'true' ? require("https").request(options) : require("http").request(options);
+    
+    if (request.method == 'POST')
+    {
+        processPost(request, response, (post_data) => {
+            // post the data
+            proxyRequest.write(post_data);
+            proxyRequest.end();
+        });
+    }
 
-    
-    var proxyRequest = require("https").request(options);
-    
     proxyRequest.on('response', function(proxyResponse) {
         console.log("Got proxy responce status=" + proxyResponse.statusCode);
         
@@ -86,7 +87,33 @@ server.addListener("request", function(request, response) {
 	proxyRequest.on('error', function(e) {
 		console.log('proxyRequest error' + JSON.stringify(e));
 	});
-});
+    
+}
+
+function processPost(request, response, callback) {
+    var queryData = "";
+    if(typeof callback !== 'function') return null;
+
+    if(request.method == 'POST') {
+        request.on('data', function(data) {
+            queryData += data;
+            if(queryData.length > 1e6) {
+                queryData = "";
+                response.writeHead(413, {'Content-Type': 'text/plain'}).end();
+                request.connection.destroy();
+            }
+        });
+
+        request.on('end', function() {
+            //request.post = querystring.parse(queryData);
+            callback(queryData);
+        });
+
+    } else {
+        response.writeHead(405, {'Content-Type': 'text/plain'});
+        response.end();
+    }
+}
 
 process.on('uncaughtException', function (err) {
   console.error(err.stack);
