@@ -8,7 +8,7 @@ exports.my_portHTTPS = exports.g_bDebug ? 4443 : 443; //process.env.PORT || 443;
 exports.my_portHTTP = process.env.PORT || 80;
 
 const domains = [
-    {'name' : 'langtest.ru', 'port' : '80', 'ssl' : 'false', 'keyname' : 'server'}, 
+    {'name' : 'langtest.ru', 'port' : '8088', 'ssl' : 'false', 'keyname' : 'server'}, 
     {'name' : 'multicoins.org', 'port' : '9443', 'ssl' : 'true', 'keyname' : 'server'}
 ];
 
