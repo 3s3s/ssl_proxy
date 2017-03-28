@@ -2,11 +2,9 @@
 
 const constants = require("./constants");
 const url = require('url');
-var querystring = require('querystring');
 
 const serverHTTP = require("http").createServer();
 const serverHTTPS = require("https").createServer(constants.options);
-//const server = constants.g_bDebug ? serverHTTP : serverHTTPS;//require("http").createServer() : require("https").createServer(constants.options);
 
 serverHTTP.listen(constants.my_portHTTP, function(){
     console.log("HTTP Proxy listening on port "+constants.my_portHTTP);
@@ -42,6 +40,7 @@ function CommonProxy(request, response)
 {
     const objHostAndPort = constants.GetHostAndPort2(request.headers.host);
 
+    console.log('proxy url=' + request.url);
     const ph = url.parse(request.url);
     const path = objHostAndPort.path || ph.path;
 
@@ -54,22 +53,32 @@ function CommonProxy(request, response)
     };
     options.headers.host = objHostAndPort.name;
     
-    var proxyRequest = objHostAndPort.ssl == 'true' ? require("https").request(options) : require("http").request(options);
+    const proxy = objHostAndPort.ssl == 'true' ? require("https") : require("http");
     
     if (request.method == 'POST')
     {
         processPost(request, response, (post_data) => {
             // post the data
+            const proxyRequest = proxy.request(options);
             proxyRequest.write(post_data);
-            proxyRequest.end();
+            ContinueProxy(proxyRequest, request, response);
         });
     }
+    else
+    {
+        const proxyRequest = proxy.request(options);
+        ContinueProxy(proxyRequest, request, response);
+    }
+    
+}
 
+function ContinueProxy(proxyRequest, request, response)
+{
     proxyRequest.on('response', function(proxyResponse) {
-        console.log("Got proxy responce status=" + proxyResponse.statusCode);
-        
+        console.log("Got proxy responce status=" + proxyResponse.statusCode + " for url=" + request.url);
+            
 		response.writeHead(proxyResponse.statusCode, proxyResponse.headers)
-		
+    		
 		proxyResponse.on('data', function(chunk) {
 			response.write(chunk, 'binary')
         })
@@ -77,17 +86,19 @@ function CommonProxy(request, response)
 			response.end()
 		})
     });
-    
+        
     request.on('data', function(chunk) {
         proxyRequest.write(chunk, 'binary')
     });
-    
+        
     request.on('end', function() { proxyRequest.end() });
-    
+        
 	proxyRequest.on('error', function(e) {
 		console.log('proxyRequest error' + JSON.stringify(e));
+		response.end();
+		proxyRequest.end();
 	});
-    
+            
 }
 
 function processPost(request, response, callback) {
