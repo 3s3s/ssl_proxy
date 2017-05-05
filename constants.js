@@ -9,7 +9,10 @@ exports.my_portHTTP = process.env.PORT || 80;
 
 const domains = [
     {'name' : 'langtest.ru', 'port' : '8088', 'ssl' : 'false', 'keyname' : 'server'}, 
-    {'name' : 'multicoins.org', 'port' : '9443', 'ssl' : 'true', 'keyname' : 'server'}
+    {'name' : 'multicoins.org', 'port' : '9443', 'ssl' : 'true', 'keyname' : 'server'},
+    {'name' : 'trade.multicoins.org', 'port' : '11443', 'ssl' : 'true', 'keyname' : 'server'},
+    {'name' : 'natcoin.multicoins.org', 'port' : '14443', 'ssl' : 'true', 'keyname' : 'server'},
+    {'name' : 'ppc.multicoins.org', 'port' : '15443', 'ssl' : 'true', 'keyname' : 'server'}
 ];
 
 /////////////////////////////////////////////////////////////
