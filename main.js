@@ -46,7 +46,7 @@ function CommonProxy(request, response)
 
     const options = {
         port: objHostAndPort.port,
-        hostname: objHostAndPort.name,
+        hostname: '127.0.0.1', //objHostAndPort.name,
         method: request.method,
         path: path || '/',
         headers: request.headers
