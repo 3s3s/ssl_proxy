@@ -9,21 +9,6 @@ exports.my_portHTTP = process.env.PORT || 80;
 
 const cert = '/etc/letsencrypt/live/mc.multicoins.org/fullchain.pem';
 const key = '/etc/letsencrypt/live/mc.multicoins.org/privkey.pem';
-//const cert = '/home/kzv/langtest/ssl_proxy/ssl_cert/server.crt';
-//const key = '/home/kzv/langtest/ssl_proxy/ssl_cert/server.key';
-
-/*const domains = [
-//    {'name' : 'langtest.ru', 'port' : '8088', 'ssl' : 'false', 'keyname' : 'server'}, 
-//    {'name' : 'multicoins.org', 'port' : '9443', 'ssl' : 'true', 'keyname' : 'server'},
-//    {'name' : 'trade.multicoins.org', 'port' : '11443', 'ssl' : 'true', 'keyname' : 'server'},
-//    {'name' : 'natcoin.multicoins.org', 'port' : '14443', 'ssl' : 'true', 'keyname' : 'server'},
-    {'name' : 'ppc.multicoins.org', 'port' : '15443', 'ssl' : 'true'},
-    {'name' : 'ppc-ex.multicoins.org', 'port' : '11443', 'ssl' : 'true'},
-    {'name' : 'mc.multicoins.org', 'port' : '16443', 'ssl' : 'true'},
-    {'name' : 'mc-ex.multicoins.org', 'port' : '17443', 'ssl' : 'true'},
-    {'name' : 'mc-dice.multicoins.org', 'port' : '18443', 'ssl' : 'true'},
-    {'name' : 'mc-pool.multicoins.org', 'port' : '8092', 'ssl' : 'false'}
-];*/
 
 const domains = [
     {'name' : 'langtest.ru', 'port' : '8088', 'ssl' : 'false'}, //'keyname' : 's
