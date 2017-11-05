@@ -3,7 +3,10 @@
 const constants = require("./constants");
 const url = require('url');
 
-const serverHTTP = require("http").createServer();
+const serverHTTP = require("http").createServer(function(req, res) {
+    res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+    res.end();
+});
 const serverHTTPS = require("https").createServer(constants.options);
 
 serverHTTP.listen(constants.my_portHTTP, function(){
